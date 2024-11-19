@@ -14,6 +14,7 @@
             class="sled"
             :style="{ left: `${vector[0]}%`, top: `${vector[1]}%` }"
             @mouseover="toggle"
+            @click="toggle"
           />
         </div>
       </div>
@@ -88,17 +89,20 @@ isGameOver.value = false;
   display: flex;
   justify-content: center;
   background-color: rgba(5, 5, 5, 0.3);
+  max-width: 800px;
 }
 
 .game-title {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 50px;
 }
 
 .title-text {
   color: var(--color-primary);
   margin-bottom: 20px;
+  text-align: center;
 }
 
 .game-active {
@@ -126,8 +130,10 @@ isGameOver.value = false;
 .track {
   background: rgba(125, 125, 125, 0.3);
   border-radius: 0.5rem;
-  max-width: 800px;
+  max-width: 500px;
+  min-width: 250px;
   width: 100%;
+  display: inline-block;
 }
 
 .sled {
@@ -161,8 +167,8 @@ isGameOver.value = false;
 }
 
 .game-image {
-  max-width: 300px;
-  max-height: 300px;
+    max-width: 100%;
+    max-height: 150px;
 }
 
 .anim-enter-active {
@@ -179,5 +185,17 @@ isGameOver.value = false;
   100% {
     transform: scale(1);
   }
+}
+
+@media screen and (min-width: 768px) {
+
+    .track {
+    min-width: 600px;
+}
+  
+    .game-image {
+    max-width: 100%;
+    max-height: 200px;
+}
 }
 </style>

@@ -8,7 +8,7 @@
               <option value="" class="select-option">Выберите локацию</option>
               <option value="1" class="select-option">Лока 1</option>
           </select>
-          <button class="button">Найти</button>
+          <button class="button button-s">Найти</button>
       </div>
     </div>
     <main class="main">
@@ -17,10 +17,8 @@
           <Character :name="character.name" :status="character.status" :image="character.image" :location="character.location.name"/>
         </div>
       </div>
-    </main>
-    <footer>
       <Game />
-    </footer>
+    </main>
   </div>
 </template>
 
@@ -105,6 +103,7 @@ let characterList = computed(() => {
   flex-direction: column;
   gap: 16px;
   width: 100%;
+  max-width: 370px;
 }
 .header-input {
   width: 200px;
@@ -146,6 +145,8 @@ let characterList = computed(() => {
   height: 50vh;
   margin-top: 20px;
   background-color: rgba(0, 0, 0, 0.6);
+  max-width: 360px;
+  transition: 300ms;
 }
 
 .scroll-container::-webkit-scrollbar {
@@ -161,5 +162,37 @@ let characterList = computed(() => {
 .scroll-container::-webkit-scrollbar-thumb {
   border-radius: 10px;
   background: var(--color-primary);
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+@media screen and (min-width: 768px) {
+  
+  .scroll-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 740px;
+    transition: 300ms;
+  }
+  .search {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    max-width: 500px;
+  }
+}
+
+@media screen and (min-width: 1280px) {
+  .scroll-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 1280px;
+    transition: 300ms;
+  }
 }
 </style>
