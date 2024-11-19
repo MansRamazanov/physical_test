@@ -9,7 +9,7 @@ export const useCharacterListStore = defineStore("characterListStore", () => {
   async function getCharactersInfo() {
     try {
       const response = await axios.get(
-        "https://rickandmortyapi.com/api/character?page=1"
+        "https://rickandmortyapi.com/api/character/?page=1"
       );
       console.log(response.data);
       characters.value.push(...response.data.results);
@@ -22,11 +22,11 @@ export const useCharacterListStore = defineStore("characterListStore", () => {
   async function getNextPage() {
     currentPage.value++;
     if (currentPage.value > 42) {
-      currentPage.value = 1;
+      return
     }
     try {
       const response = await axios.get(
-        `https://rickandmortyapi.com/api/character?page=${currentPage.value}`
+        `https://rickandmortyapi.com/api/character/?page=${currentPage.value}`
       );
       characters.value.push(...response.data.results);
     } catch (error) {

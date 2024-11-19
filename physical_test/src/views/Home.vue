@@ -8,24 +8,19 @@
               <option value="" class="select-option">Выберите локацию</option>
               <option value="1" class="select-option">Лока 1</option>
           </select>
-          <button class="header-button">Найти</button>
+          <button class="button">Найти</button>
       </div>
     </div>
     <main class="main">
-      <div v-infinite-scroll="[onLoadMore, { distance: 20 }]">
-        <div v-for="character in characterList">
+      <div v-infinite-scroll="[onLoadMore, { distance: 20 }]" class="scroll-container">
+        <div v-for="character in characters">
           <Character :name="character.name" :status="character.status" :image="character.image" :location="character.location.name"/>
         </div>
       </div>
-      <!-- <RecycleScroller
-    class="scroller"
-    :items="characterList"
-    :item-size="20"
-    key-field="id"
-    v-slot="{ item }"
-  >
-      </RecycleScroller> -->
     </main>
+    <footer>
+      <Game />
+    </footer>
   </div>
 </template>
 
@@ -35,6 +30,7 @@ import { computed, onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { vInfiniteScroll } from '@vueuse/components'
 import Character from "../components/Chatacter.vue";
+import Game from "../components/Game.vue";
 
 const characterListStore = useCharacterListStore();
 const { characters } = storeToRefs(characterListStore);
@@ -50,6 +46,10 @@ let searchString = ref("");
 let selectValue = ref();
 console.log(selectValue);
 console.log(searchString)
+
+function onLoadMore() {
+  characterListStore.getNextPage();
+};
 
 let characterList = computed(() => {
   console.log(characters.value);
@@ -96,7 +96,7 @@ let characterList = computed(() => {
 }
 
 .logo { 
-  width: 100px;
+  width: 150px;
 }
 
 .search {
@@ -110,7 +110,7 @@ let characterList = computed(() => {
   width: 200px;
   background: transparent;
   border: none;
-  border-bottom: 1px solid #EDF5E1;
+  border-bottom: 1px solid var(--text-color);
   font-size: 14px;
   line-height: 19px;
 }
@@ -124,10 +124,10 @@ let characterList = computed(() => {
   width: 205px;
   background: transparent;
   border: none;
-  border-bottom: 1px solid #EDF5E1;
+  border-bottom: 1px solid var(--text-color);
   font-size: 14px;
   line-height: 19px;
-  color: #EDF5E1;
+  color: var(--text-color);
 }
 
 .select-option {
@@ -140,14 +140,26 @@ let characterList = computed(() => {
   border-bottom: 1px solid var(--color-secondary);
 }
 
-.header-button {
-  width: 70px;
-  height: 20px;
-  background: var(--color-secondary);
-  border: 1px solid var(--color-primary);
+
+.scroll-container {
+  overflow-y: scroll;
+  height: 50vh;
+  margin-top: 20px;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.scroll-container::-webkit-scrollbar {
+  width: 10px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  -webkit-box-shadow: none;
+  background-color: #7a7a83;
   border-radius: 10px;
-  color: var(--color-primary);
-  cursor: pointer;
-  font-size: 14px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: var(--color-primary);
 }
 </style>
