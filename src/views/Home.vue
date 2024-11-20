@@ -3,27 +3,28 @@
     <div class="header">
       <img src="../assets/img/Rick_and_Morty.svg.png" alt="logo" class="logo">
       <div class="search">
-          <input type="text" id="search" placeholder="Введите имя персонажа" class="header-input" v-model="searchString">
-          <select name="location" id="" class="header-select" v-model="selectValue">
-              <option value="" class="select-option">Выберите локацию</option>
-              <option value="1" class="select-option">Лока 1</option>
+          <input type="text" id="search" placeholder="Введите имя персонажа" class="header-input" v-model="searchString" v-on:change="onChangeSelected">
+          <select name="location" id="location" class="header-select" v-model="selectValue" @change="onChangeSelected">
+              <option value="" selected class="select-option">Выберите локацию</option>
+              <option v-for="location in locations" :value="location.name" class="select-option">{{ location.name }}</option>
+
           </select>
-          <button class="button button-s">Найти</button>
       </div>
     </div>
     <main class="main">
       <div v-infinite-scroll="[onLoadMore, { distance: 20 }]" class="scroll-container">
-        <div v-for="character in characters">
+        <div v-for="character in characterList">
           <Character :name="character.name" :status="character.status" :image="character.image" :location="character.location.name"/>
         </div>
       </div>
-      <Game />
+      <Game class="game"/>
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useCharacterListStore } from "../stores/characterList";
+import { useLocationListStore } from "../stores/locationList";
 import { computed, onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { vInfiniteScroll } from '@vueuse/components'
@@ -31,54 +32,95 @@ import Character from "../components/Chatacter.vue";
 import Game from "../components/Game.vue";
 
 const characterListStore = useCharacterListStore();
-const { characters } = storeToRefs(characterListStore);
+const { characters, allCharacters } = storeToRefs(characterListStore);
 const { getCharactersInfo } = characterListStore;
 
+const locationListStore = useLocationListStore();
+const { locations } = storeToRefs(locationListStore);
+const { getLocationsInfo } = locationListStore;
+
 onMounted(async () => {
-  console.log(characters.value);
+  // console.log(characters.value);
+  // console.log(locations.value);
   await getCharactersInfo();
-  console.log(characters.value);
+  await getLocationsInfo();
+  // console.log(characters.value);
+  // console.log(locations.value);
 });
 
 let searchString = ref("");
-let selectValue = ref();
-console.log(selectValue);
-console.log(searchString)
+let selectValue = ref("");
+// console.log(selectValue);
+// console.log(searchString)
+
 
 function onLoadMore() {
   characterListStore.getNextPage();
 };
 
 let characterList = computed(() => {
-  console.log(characters.value);
-  if (!searchString.value && selectValue._value === "Status") {
+  // console.log(characters.value);
+  if (searchString.value === "" && selectValue.value === "") {
     return characters.value;
-  } else if (!searchString.value && selectValue._value) {
-    return characters.value.filter(
+  } else if (searchString.value === "" && selectValue.value) {
+    return allCharacters.value.filter(
       (character) =>
-        character.status
+        character.location.name
           .toLowerCase()
           .includes(selectValue._value.toLowerCase()) &&
           character.name
     );
-  } else if (searchString.value && !selectValue._value) {
-    return characters.value.filter((character) =>
+  } else if (searchString.value && selectValue.value === "") {
+    return allCharacters.value.filter((character) =>
       character.name
         .toLowerCase()
         .includes(searchString.value.trim().toLowerCase())
     );
-  } else if (searchString.value && selectValue._value) {
-    return characters.value.filter(
+  } else if (searchString.value && selectValue.value) {
+    return allCharacters.value.filter(
       (character) =>
         character.name
           .toLowerCase()
           .includes(searchString.value.trim().toLowerCase()) &&
-        character.status
+        character.location.name
           .toLowerCase()
           .includes(selectValue._value.toLowerCase())
     );
   }
 });
+
+function onChangeSelected() {
+  let characterList = computed(() => {
+  console.log(characters.value);
+  if (searchString.value === "" && selectValue.value === "") {
+    return characters.value;
+  } else if (searchString.value === "" && selectValue.value) {
+    return allCharacters.value.filter(
+      (character) =>
+        character.location.name
+          .toLowerCase()
+          .includes(selectValue._value.toLowerCase()) &&
+          character.name
+    );
+  } else if (searchString.value && selectValue.value === "") {
+    return allCharacters.value.filter((character) =>
+      character.name
+        .toLowerCase()
+        .includes(searchString.value.trim().toLowerCase())
+    );
+  } else if (searchString.value && selectValue.value) {
+    return allCharacters.value.filter(
+      (character) =>
+        character.name
+          .toLowerCase()
+          .includes(searchString.value.trim().toLowerCase()) &&
+        character.location.name
+          .toLowerCase()
+          .includes(selectValue._value.toLowerCase())
+    );
+  }
+});
+}
 
 </script>
 
@@ -112,6 +154,7 @@ let characterList = computed(() => {
   border-bottom: 1px solid var(--text-color);
   font-size: 14px;
   line-height: 19px;
+  color: var(--text-color);
 }
 
 .header-input:focus-visible {
@@ -132,6 +175,7 @@ let characterList = computed(() => {
 .select-option {
   font-size: 14px;
   line-height: 19px;
+  color: black;
 }
 
 .header-select:focus-visible {
@@ -142,12 +186,29 @@ let characterList = computed(() => {
 
 .scroll-container {
   overflow-y: scroll;
-  height: 50vh;
+  max-height: 45vh;
   margin-top: 20px;
   background-color: rgba(0, 0, 0, 0.6);
   max-width: 360px;
   transition: 300ms;
 }
+
+
+.header-select::-webkit-scrollbar {
+  width: 10px;
+}
+
+.header-select::-webkit-scrollbar-track {
+  -webkit-box-shadow: none;
+  background-color: transparent;
+  border-radius: 10px;
+}
+
+.header-select::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: var(--color-primary);
+}
+
 
 .scroll-container::-webkit-scrollbar {
   width: 10px;
@@ -170,13 +231,43 @@ let characterList = computed(() => {
   align-items: center;
 }
 
+@media screen and (min-width: 320px) and (max-height: 740px) and (orientation: portrait) {
+
+  .search {
+    margin-top: 10px
+  }
+  .game {
+  display: none;
+}
+.logo {
+    width: 100px;
+  }
+  
+}
+
+@media screen and (min-width: 320px) and (max-height: 660px) and (orientation: landscape) {
+
+  .search {
+    margin-top: 10px
+  }
+
+.game {
+  display: none;
+}
+  .logo {
+    width: 100px;
+  }
+
+}
+
 
 @media screen and (min-width: 768px) {
   
   .scroll-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    max-width: 740px;
+    width: 100%;
+    max-width: 980px;
     transition: 300ms;
   }
   .search {
@@ -192,6 +283,7 @@ let characterList = computed(() => {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     max-width: 1280px;
+    width: 100%;
     transition: 300ms;
   }
 }

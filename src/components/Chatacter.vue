@@ -33,8 +33,10 @@ const props = defineProps<Props>();
         margin-right: 10px;
         font-size: 14px;
         line-height: 19px;
+        max-width: 100%;
     }
     .character-image {
         width: 40px;
     }
+
 </style>
